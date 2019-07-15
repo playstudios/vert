@@ -144,17 +144,19 @@ function M.init(opts)
     lfs.mkdir(DIRECTORY)
   end
 
-  local LUAROCKS_VERSION  = opts["luarocks-version"] or "3.1.2"
+    local config = pcall(require, "vert_config")
+
+    local LUAROCKS_VERSION  = LUAROCKS_VERSION or opts["luarocks-version"] or "3.1.2"
   local LUA_VERSION       = opts["lua-version"] or "5.3.5"
   local PLATFORM          = opts["platform"] or utils.get_os()
 
-  local LUAROCKS_URI      = "http://luarocks.org/releases/"
+    local LUAROCKS_URI      = LUAROCKS_URI or "http://luarocks.org/releases/"
   local LUA_URI           = "http://www.lua.org/ftp/"
   local LUA_FILENAME      = "lua-"..LUA_VERSION..".tar.gz"
   local LUAROCKS_FILENAME = "luarocks-"..LUAROCKS_VERSION..".tar.gz"
   local BUILD_DIR         = DIRECTORY.."/build/"
   local CURRENT_DIR       = lfs.currentdir()
-  local config = pcall(require, "vert_config")
+
 
   if not utils.isdir(BUILD_DIR) then
     lfs.mkdir(BUILD_DIR)
