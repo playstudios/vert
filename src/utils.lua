@@ -2,6 +2,7 @@ local http  = require("socket.http")
 local ltn12 = require("ltn12")
 local lfs   = require("lfs")
 local io    = require("io")
+local mime  = require("mime")
 
 local M = {}
 
@@ -43,9 +44,19 @@ end
 
 function M.download(url, filename)
   return http.request({ url = url
+                      , headers = { 
+                          ["user-agent"] = "Vert/dev macosx-x86_64".." via LuaSocket",
+                          ["authentication"] = "Basic " .. (mime.b64("greg:7zKNHqPNaSqCeN7W")) 
+                        }
                       , method = "GET"
+                      --, redirect = false
                       , sink = ltn12.sink.file(io.open(filename, "w"))
                       })
+end
+
+function M.download_wget(url, build_dir)
+  M.ensure(M.run("wget -P %s %s", build_dir, url), "wget "..url.." failed")
+  -- body
 end
 
 function M.build_lua(lua_dir, platform, top)

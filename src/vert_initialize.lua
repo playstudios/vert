@@ -2,6 +2,19 @@
 --require("mobdebug").start()
 local M = {}
 
+function dump(o)
+   if type(o) == 'table' then
+      local s = '{ '
+      for k,v in pairs(o) do
+         if type(k) ~= 'number' then k = '"'..k..'"' end
+         s = s .. '['..k..'] = ' .. dump(v) .. ','
+      end
+      return s .. '} '
+   else
+      return tostring(o)
+   end
+end
+
 function M.init(opts)
   local lfs     = require("lfs")
   local utils   = require("utils")
@@ -169,13 +182,17 @@ function M.init(opts)
       os.exit(2)
     end
   end
-
+  print(LUAROCKS_FILENAME)
   if not lfs.attributes(BUILD_DIR..LUAROCKS_FILENAME) then
-    local _, status, _headers = utils.download(LUAROCKS_URI..LUAROCKS_FILENAME, BUILD_DIR..LUAROCKS_FILENAME)
-    if status ~= 200 then
-      print("Failed to download luarocks version: "..LUAROCKS_VERSION)
-      os.exit(2)
-    end
+    --download with wget
+    utils.download_wget(LUAROCKS_URI..LUAROCKS_FILENAME, BUILD_DIR)
+    -- local _, status, _headers = utils.download(LUAROCKS_URI..LUAROCKS_FILENAME, BUILD_DIR..LUAROCKS_FILENAME)
+    -- print(LUAROCKS_URI..LUAROCKS_FILENAME)
+    -- print("status: "..status.."headers: "..dump(_headers))
+    -- if status ~= 200 and status ~= 308 then
+    --   print("Failed to download luarocks version: "..LUAROCKS_VERSION)
+    --   os.exit(2)
+    -- end
   end
 
   utils.run("tar -xvpf %s -C %s", BUILD_DIR..LUA_FILENAME, BUILD_DIR)
